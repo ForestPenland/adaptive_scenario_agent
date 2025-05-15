@@ -1,0 +1,10 @@
+{
+  "name": "scenario-manager",
+  "version": "1.0.0",
+  "description": "Lambda function for managing scenarios in Glean Technical Enablement",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.398.0",
+    "@aws-sdk/lib-dynamodb": "^3.398.0"
+  }
+}

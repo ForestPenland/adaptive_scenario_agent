@@ -1,0 +1,188 @@
+{
+  "scenarioId": "financial-services-agent-implementation",
+  "title": "Enterprise Financial Services AI Agent Implementation",
+  "description": "A large financial services company is interested in implementing Glean AI Agents to streamline their customer onboarding process. They have complex compliance requirements and need to integrate with multiple existing systems. The customer is technically sophisticated but concerned about data security and governance.",
+  "difficulty": "intermediate",
+  "targetRoles": ["SE", "SA", "CSM"],
+  "learningObjectives": [
+    "Demonstrate understanding of Glean AI Agent architecture",
+    "Explain how agent governance works in regulated industries",
+    "Configure agents to integrate with existing enterprise systems",
+    "Present business value of agent implementation"
+  ],
+  "scenarioType": "customer meeting simulation",
+  "stages": [
+    {
+      "stageId": "discovery",
+      "title": "Discovery Call",
+      "description": "Initial discovery call with the customer's IT and business stakeholders to understand their needs",
+      "challenge": "The CIO asks: 'We've tried other AI solutions before, but they couldn't handle our complex compliance requirements. How does Glean's AI Agent approach differ, especially regarding data security and governance?'",
+      "expectedElements": [
+        "Acknowledge previous AI challenges in financial services",
+        "Explain Glean's security and governance architecture",
+        "Describe how agent permissions work",
+        "Ask follow-up questions about specific compliance concerns"
+      ],
+      "technicalPoints": [
+        "Glean's active data and AI governance with continuous scanning",
+        "Permission enforcement across 100+ data sources",
+        "Customizable security policies",
+        "Agent access controls"
+      ],
+      "commonMistakes": [
+        "Focusing only on features without addressing compliance",
+        "Not asking about their specific regulatory requirements",
+        "Overcommitting on compliance capabilities",
+        "Being too vague about security measures"
+      ],
+      "skillTags": ["security-governance", "discovery-questioning", "technical-communication"],
+      "passThreshold": 70
+    },
+    {
+      "stageId": "technical-demo",
+      "title": "Technical Solution Demonstration",
+      "description": "Follow-up meeting to demonstrate how Glean AI Agents would work in their environment",
+      "challenge": "The Enterprise Architect asks: 'Can you show us specifically how we would configure an agent to handle our customer onboarding process? It needs to verify customer identity, check against our compliance database, and create accounts in three different systems.'",
+      "expectedElements": [
+        "Demonstrate the agent builder interface",
+        "Show how to configure multi-step workflows",
+        "Explain how agents connect to multiple systems",
+        "Discuss how to test and validate agent configurations"
+      ],
+      "technicalPoints": [
+        "Agentic reasoning engine for multi-step workflows",
+        "API integration capabilities",
+        "Agent orchestration for system triggers",
+        "Testing and validation process"
+      ],
+      "commonMistakes": [
+        "Not showing a concrete example",
+        "Glossing over technical integration details",
+        "Failing to address how errors are handled",
+        "Not explaining the testing process"
+      ],
+      "skillTags": ["agent-configuration", "technical-demonstration", "integration-knowledge"],
+      "passThreshold": 75
+    },
+    {
+      "stageId": "objection-handling",
+      "title": "Security Objection Handling",
+      "description": "Meeting with the CISO who has concerns about data access",
+      "challenge": "The CISO interrupts: 'I'm concerned about giving AI agents broad access to our systems. What happens if someone configures an agent incorrectly and it accesses or shares sensitive customer financial data?'",
+      "expectedElements": [
+        "Acknowledge the valid concern",
+        "Explain the defense-in-depth approach",
+        "Detail the specific preventive controls",
+        "Describe monitoring and remediation capabilities"
+      ],
+      "technicalPoints": [
+        "Role-based access controls for agent creators",
+        "Agent action audit logging",
+        "Data loss prevention integration",
+        "Active governance with sensitive data scanning"
+      ],
+      "commonMistakes": [
+        "Dismissing the concern as unlikely",
+        "Providing only general assurances",
+        "Not addressing the specific scenario mentioned",
+        "Failing to explain monitoring capabilities"
+      ],
+      "skillTags": ["security-governance", "objection-handling", "risk-management"],
+      "passThreshold": 80
+    },
+    {
+      "stageId": "implementation-planning",
+      "title": "Implementation Planning Session",
+      "description": "Working session to create an implementation roadmap",
+      "challenge": "The project manager asks: 'What would a realistic implementation timeline look like? We need to prioritize customer onboarding first, then expand to other use cases. How should we phase this approach?'",
+      "expectedElements": [
+        "Outline a phased implementation approach",
+        "Recommend starting with a limited pilot",
+        "Detail key milestones and dependencies",
+        "Discuss resource requirements and training"
+      ],
+      "technicalPoints": [
+        "Implementation phases and timeline",
+        "Technical prerequisites and system requirements",
+        "User training and adoption strategy",
+        "Success metrics and monitoring"
+      ],
+      "commonMistakes": [
+        "Proposing an unrealistic timeline",
+        "Not accounting for testing and validation",
+        "Overlooking change management needs",
+        "Failing to identify dependencies on other systems"
+      ],
+      "skillTags": ["implementation-planning", "project-management", "adoption-strategy"],
+      "passThreshold": 75
+    },
+    {
+      "stageId": "value-presentation",
+      "title": "Executive Value Presentation",
+      "description": "Presentation to executive stakeholders on expected ROI and business impact",
+      "challenge": "The CFO asks: 'What specific metrics should we track to measure the success of this implementation, and what ROI can we expect in the first year?'",
+      "expectedElements": [
+        "Present relevant case studies from financial services",
+        "Recommend specific KPIs to track",
+        "Provide a framework for calculating ROI",
+        "Set realistic expectations for first-year returns"
+      ],
+      "technicalPoints": [
+        "Metrics collection methodology",
+        "Baseline establishment process",
+        "Analytics dashboard options",
+        "Cost vs. benefit comparison framework"
+      ],
+      "commonMistakes": [
+        "Using generic ROI statistics not specific to their use case",
+        "Overpromising on financial returns",
+        "Not tying metrics to their specific business goals",
+        "Failing to address implementation and maintenance costs"
+      ],
+      "skillTags": ["business-value", "metrics-analysis", "executive-communication"],
+      "passThreshold": 80
+    }
+  ],
+  "adaptationRules": {
+    "difficultyIncrease": {
+      "conditions": {
+        "consecutiveHighScores": 2,
+        "averageScore": 90
+      },
+      "adjustments": {
+        "addComplexity": true,
+        "introduceEdgeCases": true,
+        "addTechnicalDepth": true
+      }
+    },
+    "difficultyDecrease": {
+      "conditions": {
+        "consecutiveLowScores": 2,
+        "averageScore": 60
+      },
+      "adjustments": {
+        "simplifyChallenge": true,
+        "provideHints": true,
+        "reduceTechnicalDepth": true
+      }
+    }
+  },
+  "resources": {
+    "productDocs": [
+      {
+        "title": "Glean AI Agents Security Overview",
+        "url": "https://docs.glean.com/security/ai-agents"
+      },
+      {
+        "title": "Agent Governance Best Practices",
+        "url": "https://docs.glean.com/governance/best-practices"
+      }
+    ],
+    "demoEnvironments": [
+      {
+        "title": "Financial Services Demo Environment",
+        "url": "https://demo.glean.com/financial-services"
+      }
+    ]
+  }
+}

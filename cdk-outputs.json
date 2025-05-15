@@ -1,0 +1,13 @@
+{
+  "GleanTechnicalEnablementStack": {
+    "UserPoolClientId": "220ennfph52ctk9s6716lvfnjq",
+    "ScenarioTableName": "GleanTechnicalEnablementStack-ScenarioTable3038D1FE-1EM2SQTKK6B9Y",
+    "ExportedDistributionId": "E21VBSA8XA4NJG",
+    "UserPoolId": "us-east-1_t3vzVJ1ZK",
+    "ExportedBucketName": "gleantechnicalenablementstac-websitebucket75c24d94-ourlgdtils5v",
+    "EnablementApiEndpoint66B8EAFC": "https://qpp26j3nvk.execute-api.us-east-1.amazonaws.com/prod/",
+    "WebsiteURL": "https://d3uslidt50jxq7.cloudfront.net",
+    "ApiEndpoint": "https://qpp26j3nvk.execute-api.us-east-1.amazonaws.com/prod/",
+    "ExportedDistributionDomain": "d3uslidt50jxq7.cloudfront.net"
+  }
+}

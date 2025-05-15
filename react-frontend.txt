@@ -1,0 +1,646 @@
+import React, { useState, useEffect } from 'react';
+import { Amplify, Auth } from 'aws-amplify';
+import { Container, Card, Button, Form, Alert, Spinner, ProgressBar, Badge } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+// Configure Amplify with your AWS resources
+// You would replace these values with the outputs from your CDK deployment
+Amplify.configure({
+  Auth: {
+    region: 'us-east-1',
+    userPoolId: 'YOUR_USER_POOL_ID',
+    userPoolWebClientId: 'YOUR_USER_POOL_CLIENT_ID',
+  },
+  API: {
+    endpoints: [
+      {
+        name: 'enablementApi',
+        endpoint: 'YOUR_API_GATEWAY_URL',
+        custom_header: async () => {
+          const session = await Auth.currentSession();
+          return {
+            Authorization: `Bearer ${session.getIdToken().getJwtToken()}`,
+          };
+        },
+      },
+    ],
+  },
+});
+
+const ScenarioSimulator = () => {
+  // State variables
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [role, setRole] = useState('SE'); // Default role
+  const [experience, setExperience] = useState('Intermediate');
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  
+  const [availableScenarios, setAvailableScenarios] = useState([]);
+  const [selectedScenario, setSelectedScenario] = useState(null);
+  const [currentStage, setCurrentStage] = useState(null);
+  const [learnerResponse, setLearnerResponse] = useState('');
+  const [evaluation, setEvaluation] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [learnerProgress, setLearnerProgress] = useState(null);
+  
+  // Check if user is logged in on component mount
+  useEffect(() => {
+    checkAuthState();
+  }, []);
+  
+  // Fetch available scenarios when user logs in
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchScenarios();
+    }
+  }, [isLoggedIn]);
+  
+  const checkAuthState = async () => {
+    try {
+      await Auth.currentAuthenticatedUser();
+      setIsLoggedIn(true);
+    } catch (error) {
+      setIsLoggedIn(false);
+    }
+  };
+  
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMessage('');
+    
+    try {
+      await Auth.signIn(username, password);
+      setIsLoggedIn(true);
+      setSuccessMessage('Login successful!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setErrorMessage('');
+    
+    try {
+      await Auth.signUp({
+        username,
+        password,
+        attributes: {
+          email,
+          given_name: firstName,
+          family_name: lastName,
+          'custom:role': role,
+          'custom:experience': experience,
+        },
+      });
+      setSuccessMessage('Registration successful! Please check your email for verification code.');
+      setIsRegistering(false);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleLogout = async () => {
+    try {
+      await Auth.signOut();
+      setIsLoggedIn(false);
+      setSelectedScenario(null);
+      setCurrentStage(null);
+      setEvaluation(null);
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  };
+  
+  const fetchScenarios = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('YOUR_API_GATEWAY_URL/scenarios', {
+        headers: {
+          Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch scenarios');
+      }
+      
+      const data = await response.json();
+      setAvailableScenarios(data.scenarios);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const selectScenario = async (scenarioId) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch(`YOUR_API_GATEWAY_URL/scenarios/${scenarioId}`, {
+        headers: {
+          Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch scenario details');
+      }
+      
+      const data = await response.json();
+      setSelectedScenario(data.scenario);
+      
+      // Fetch learner's progress for this scenario
+      const progressResponse = await fetch(`YOUR_API_GATEWAY_URL/learner-path?scenarioId=${scenarioId}`, {
+        headers: {
+          Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`,
+        },
+      });
+      
+      if (progressResponse.ok) {
+        const progressData = await progressResponse.json();
+        setLearnerProgress(progressData.progress);
+        // Set current stage based on progress
+        setCurrentStage(data.scenario.stages[progressData.progress.currentStage]);
+      } else {
+        // First time in this scenario
+        setLearnerProgress({
+          currentStage: 0,
+          completedStages: [],
+        });
+        setCurrentStage(data.scenario.stages[0]);
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const submitResponse = async () => {
+    if (!learnerResponse.trim()) {
+      setErrorMessage('Please provide a response to the challenge');
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setErrorMessage('');
+    
+    try {
+      const userInfo = await Auth.currentAuthenticatedUser();
+      const response = await fetch(`YOUR_API_GATEWAY_URL/scenarios/${selectedScenario.scenarioId}/responses`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`,
+        },
+        body: JSON.stringify({
+          learnerId: userInfo.username,
+          scenarioId: selectedScenario.scenarioId,
+          response: learnerResponse,
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit response');
+      }
+      
+      const data = await response.json();
+      setEvaluation(data);
+      
+      // If passed and next stage exists, update current stage
+      if (data.passed && data.nextStage) {
+        setCurrentStage(data.nextStage);
+        setLearnerResponse('');
+      } else if (data.completed) {
+        setSuccessMessage('Congratulations! You have completed this scenario.');
+      }
+      
+      // Update learner progress
+      const progressResponse = await fetch(`YOUR_API_GATEWAY_URL/learner-path?scenarioId=${selectedScenario.scenarioId}`, {
+        headers: {
+          Authorization: `Bearer ${(await Auth.currentSession()).getIdToken().getJwtToken()}`,
+        },
+      });
+      
+      if (progressResponse.ok) {
+        const progressData = await progressResponse.json();
+        setLearnerProgress(progressData.progress);
+      }
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const resetScenario = () => {
+    setSelectedScenario(null);
+    setCurrentStage(null);
+    setLearnerResponse('');
+    setEvaluation(null);
+  };
+  
+  // Helper function to render score badges
+  const renderScoreBadge = (score) => {
+    let variant = 'danger';
+    if (score >= 80) variant = 'success';
+    else if (score >= 70) variant = 'warning';
+    
+    return (
+      <Badge bg={variant} className="p-2 fs-6">
+        {score}/100
+      </Badge>
+    );
+  };
+  
+  // Render login/registration form
+  if (!isLoggedIn) {
+    return (
+      <Container className="py-5">
+        <Card className="shadow-sm">
+          <Card.Body>
+            <h2 className="text-center mb-4">
+              {isRegistering ? 'Create Account' : 'Glean Technical Enablement Simulator'}
+            </h2>
+            
+            {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+            {successMessage && <Alert variant="success">{successMessage}</Alert>}
+            
+            {isRegistering ? (
+              <Form onSubmit={handleRegister}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                
+                <Form.Group className="mb-3">
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                
+                <Form.Group className="mb-3">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                
+                <Form.Group className="mb-3">
+                  <Form.Label>First Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                
+                <Form.Group className="mb-3">
+                  <Form.Label>Last Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                
+                <Form.Group className="mb-3">
+                  <Form.Label>Role</Form.Label>
+                  <Form.Select
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    required
+                  >
+                    <option value="SE">Solutions Engineer</option>
+                    <option value="SA">Solutions Architect</option>
+                    <option value="CSM">Customer Success Manager</option>
+                    <option value="Support">Support Engineer</option>
+                  </Form.Select>
+                </Form.Group>
+                
+                <Form.Group className="mb-3">
+                  <Form.Label>Experience Level</Form.Label>
+                  <Form.Select
+                    value={experience}
+                    onChange={(e) => setExperience(e.target.value)}
+                    required
+                  >
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                  </Form.Select>
+                </Form.Group>
+                
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="w-100 mb-3"
+                  disabled={isLoading}
+                >
+                  {isLoading ? <Spinner size="sm" animation="border" /> : 'Register'}
+                </Button>
+                
+                <div className="text-center">
+                  <Button
+                    variant="link"
+                    onClick={() => setIsRegistering(false)}
+                    disabled={isLoading}
+                  >
+                    Already have an account? Login
+                  </Button>
+                </div>
+              </Form>
+            ) : (
+              <Form onSubmit={handleLogin}>
+                <Form.Group className="mb-3">
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                
+                <Form.Group className="mb-3">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="w-100 mb-3"
+                  disabled={isLoading}
+                >
+                  {isLoading ? <Spinner size="sm" animation="border" /> : 'Login'}
+                </Button>
+                
+                <div className="text-center">
+                  <Button
+                    variant="link"
+                    onClick={() => setIsRegistering(true)}
+                    disabled={isLoading}
+                  >
+                    Need an account? Register
+                  </Button>
+                </div>
+                
+                <div className="text-center mt-3">
+                  <p className="text-muted">
+                    <small>
+                      This simulator demonstrates how Glean's AI Agent capabilities could be used for
+                      technical enablement of GTM teams.
+                    </small>
+                  </p>
+                </div>
+              </Form>
+            )}
+          </Card.Body>
+        </Card>
+      </Container>
+    );
+  }
+  
+  // Render scenario selection
+  if (!selectedScenario) {
+    return (
+      <Container className="py-5">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2>Technical Enablement Simulator</h2>
+          <Button variant="outline-secondary" onClick={handleLogout}>
+            Logout
+          </Button>
+        </div>
+        
+        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+        {successMessage && <Alert variant="success">{successMessage}</Alert>}
+        
+        <h4 className="mb-3">Select a Scenario</h4>
+        
+        {isLoading ? (
+          <div className="text-center py-5">
+            <Spinner animation="border" />
+          </div>
+        ) : (
+          <div className="row">
+            {availableScenarios.map((scenario) => (
+              <div className="col-md-6 col-lg-4 mb-4" key={scenario.scenarioId}>
+                <Card className="h-100 shadow-sm">
+                  <Card.Body>
+                    <Card.Title>{scenario.title}</Card.Title>
+                    <div className="mb-2">
+                      <Badge bg="info" className="me-2">
+                        {scenario.difficulty}
+                      </Badge>
+                      {scenario.targetRoles.map((role) => (
+                        <Badge
+                          bg="secondary"
+                          className="me-1"
+                          key={role}
+                        >
+                          {role}
+                        </Badge>
+                      ))}
+                    </div>
+                    <Card.Text>{scenario.description}</Card.Text>
+                  </Card.Body>
+                  <Card.Footer>
+                    <Button
+                      variant="primary"
+                      onClick={() => selectScenario(scenario.scenarioId)}
+                    >
+                      Start Scenario
+                    </Button>
+                  </Card.Footer>
+                </Card>
+              </div>
+            ))}
+          </div>
+        )}
+      </Container>
+    );
+  }
+  
+  // Render current scenario and stage
+  return (
+    <Container className="py-5">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2>{selectedScenario.title}</h2>
+        <div>
+          <Button variant="outline-secondary" className="me-2" onClick={resetScenario}>
+            Back to Scenarios
+          </Button>
+          <Button variant="outline-secondary" onClick={handleLogout}>
+            Logout
+          </Button>
+        </div>
+      </div>
+      
+      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+      {successMessage && <Alert variant="success">{successMessage}</Alert>}
+      
+      {/* Progress indicator */}
+      <Card className="mb-4 shadow-sm">
+        <Card.Body>
+          <h5>Scenario Progress</h5>
+          <ProgressBar now={(learnerProgress?.completedStages?.length || 0) * (100 / selectedScenario.stages.length)} />
+          <div className="d-flex justify-content-between mt-2">
+            <small>Stage {(learnerProgress?.currentStage || 0) + 1} of {selectedScenario.stages.length}</small>
+            <small>{Math.round((learnerProgress?.completedStages?.length || 0) * (100 / selectedScenario.stages.length))}% Complete</small>
+          </div>
+        </Card.Body>
+      </Card>
+      
+      {/* Current stage */}
+      <Card className="mb-4 shadow-sm">
+        <Card.Header>
+          <h4>{currentStage?.title || 'Stage'}</h4>
+        </Card.Header>
+        <Card.Body>
+          <h5 className="mb-3">Scenario Context</h5>
+          <p>{selectedScenario.description}</p>
+          
+          <h5 className="mb-3">Current Situation</h5>
+          <p>{currentStage?.description}</p>
+          
+          <div className="p-3 bg-light border rounded mb-4">
+            <h5 className="mb-3">Customer Challenge:</h5>
+            <p className="fw-bold">{currentStage?.challenge}</p>
+          </div>
+          
+          <Form.Group className="mb-3">
+            <Form.Label>Your Response:</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={8}
+              value={learnerResponse}
+              onChange={(e) => setLearnerResponse(e.target.value)}
+              placeholder="Provide your response to the customer's question/challenge..."
+              disabled={isSubmitting}
+            />
+          </Form.Group>
+          
+          <Button
+            variant="primary"
+            onClick={submitResponse}
+            disabled={isSubmitting || !learnerResponse.trim()}
+          >
+            {isSubmitting ? <Spinner size="sm" animation="border" /> : 'Submit Response'}
+          </Button>
+        </Card.Body>
+      </Card>
+      
+      {/* Evaluation results, if available */}
+      {evaluation && (
+        <Card className="shadow-sm">
+          <Card.Header className="bg-primary text-white">
+            <h4 className="mb-0">Response Evaluation</h4>
+          </Card.Header>
+          <Card.Body>
+            <div className="row mb-4">
+              <div className="col-md-4">
+                <div className="d-flex flex-column align-items-center">
+                  <h5>Overall Score</h5>
+                  {renderScoreBadge(evaluation.evaluation.overallScore)}
+                </div>
+              </div>
+              <div className="col-md-4">
+                <div className="d-flex flex-column align-items-center">
+                  <h5>Technical Accuracy</h5>
+                  {renderScoreBadge(evaluation.evaluation.technicalAccuracy)}
+                </div>
+              </div>
+              <div className="col-md-4">
+                <div className="d-flex flex-column align-items-center">
+                  <h5>Communication</h5>
+                  {renderScoreBadge(evaluation.evaluation.communicationEffectiveness)}
+                </div>
+              </div>
+            </div>
+            
+            <h5>Strengths:</h5>
+            <ul>
+              {evaluation.evaluation.strengths.map((strength, index) => (
+                <li key={index}>{strength}</li>
+              ))}
+            </ul>
+            
+            <h5>Areas for Improvement:</h5>
+            <ul>
+              {evaluation.evaluation.improvementAreas.map((area, index) => (
+                <li key={index}>{area}</li>
+              ))}
+            </ul>
+            
+            <h5>Feedback:</h5>
+            <p>{evaluation.evaluation.feedback}</p>
+            
+            <h5>Learning Focus:</h5>
+            <p>{evaluation.evaluation.learningFocus}</p>
+            
+            {evaluation.passed ? (
+              <Alert variant="success">
+                {evaluation.completed
+                  ? 'Congratulations! You have completed this entire scenario.'
+                  : 'Well done! You have passed this stage and can now proceed to the next challenge.'}
+              </Alert>
+            ) : (
+              <Alert variant="warning">
+                You didn't meet the passing threshold for this stage. Review the feedback and try again.
+              </Alert>
+            )}
+            
+            {evaluation.passed && !evaluation.completed && (
+              <Button variant="primary" onClick={() => setLearnerResponse('')}>
+                Continue to Next Stage
+              </Button>
+            )}
+            
+            {evaluation.completed && (
+              <Button variant="primary" onClick={resetScenario}>
+                Return to Scenario Selection
+              </Button>
+            )}
+          </Card.Body>
+        </Card>
+      )}
+    </Container>
+  );
+};
+
+export default ScenarioSimulator;

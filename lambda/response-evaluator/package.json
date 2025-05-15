@@ -1,0 +1,11 @@
+{
+  "name": "response-evaluator",
+  "version": "1.0.0",
+  "description": "Lambda function for evaluating responses in Glean Technical Enablement",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.398.0",
+    "@aws-sdk/lib-dynamodb": "^3.398.0",
+    "@aws-sdk/client-bedrock-runtime": "^3.451.0"
+  }
+}
