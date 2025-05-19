@@ -82,22 +82,22 @@ try {
   
   // Set content type for HTML files
   const htmlCommand = profile
-    ? `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --include "*.html" --content-type "text/html" --profile ${profile}`
-    : `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --include "*.html" --content-type "text/html"`;
+    ? `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --metadata-directive REPLACE --exclude "*" --include "*.html" --content-type "text/html" --profile ${profile}`
+    : `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --metadata-directive REPLACE --exclude "*" --include "*.html" --content-type "text/html"`;
   
   execSync(htmlCommand, { stdio: 'inherit' });
   
   // Set content type for JS files
   const jsCommand = profile
-    ? `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --include "*.js" --content-type "application/javascript" --profile ${profile}`
-    : `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --include "*.js" --content-type "application/javascript"`;
+    ? `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --metadata-directive REPLACE --exclude "*" --include "*.js" --content-type "application/javascript" --profile ${profile}`
+    : `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --metadata-directive REPLACE --exclude "*" --include "*.js" --content-type "application/javascript"`;
   
   execSync(jsCommand, { stdio: 'inherit' });
   
   // Set content type for CSS files
   const cssCommand = profile
-    ? `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --include "*.css" --content-type "text/css" --profile ${profile}`
-    : `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --include "*.css" --content-type "text/css"`;
+    ? `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --metadata-directive REPLACE --exclude "*" --include "*.css" --content-type "text/css" --profile ${profile}`
+    : `aws s3 cp s3://${bucketNameOutput}/ s3://${bucketNameOutput}/ --recursive --metadata-directive REPLACE --exclude "*" --include "*.css" --content-type "text/css"`;
   
   execSync(cssCommand, { stdio: 'inherit' });
   
