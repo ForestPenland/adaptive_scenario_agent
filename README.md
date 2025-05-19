@@ -1,6 +1,6 @@
 # Glean Technical Enablement Simulator
 
-A comprehensive cloud-based platform that helps GTM (Go-to-Market) teams practice and improve their technical knowledge through AI-powered scenario simulations. This application leverages AWS CDK to deploy a complete solution with frontend and backend components.
+A comprehensive cloud-based platform that helps GTM (Go-to-Market) and support teams practice and improve their technical knowledge through AI-powered scenario simulations. This application leverages AWS CDK to deploy a complete solution with frontend and backend components.
 
 ## Architecture Overview
 
