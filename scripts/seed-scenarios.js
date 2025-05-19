@@ -32,96 +32,122 @@ if (profile) {
 // Load the scenario data (do this outside the function to be more efficient)
 const sampleScenario = JSON.parse(fs.readFileSync(path.join(__dirname, '../sample-scenario-json.json'), 'utf8'));
 const additionalScenario = {
-  "scenarioId": "cloud-migration-assessment",
-  "title": "Enterprise Cloud Migration Assessment",
-  "description": "A large healthcare organization is looking to migrate their data and workflows from on-premise systems to a cloud platform. They need assistance in identifying which Glean features would be most beneficial for this transition.",
-  "difficulty": "advanced",
-  "targetRoles": ["SA", "SE"],
+  "scenarioId": "ai-agent-prompt-engineering",
+  "title": "Enterprise AI Agent Prompt Engineering",
+  "description": "A technology company with a large knowledge base spread across various documentation systems is implementing Glean AI Agents to improve employee productivity. They need expertise in designing effective prompts that produce consistent, high-quality responses.",
+  "difficulty": "intermediate",
+  "targetRoles": ["SE", "SA", "CSM"],
   "learningObjectives": [
-    "Demonstrate understanding of cloud migration challenges",
-    "Map Glean capabilities to enterprise migration needs",
-    "Assess data security considerations in healthcare",
-    "Create a phased implementation plan"
+    "Demonstrate understanding of prompt engineering principles",
+    "Design structured prompts for enterprise knowledge retrieval",
+    "Implement guardrails and consistency controls",
+    "Develop testing frameworks for prompt quality assurance"
   ],
-  "scenarioType": "customer meeting simulation",
+  "scenarioType": "technical workshop simulation",
   "stages": [
     {
       "stageId": "initial-assessment",
-      "title": "Initial Technical Assessment",
-      "description": "First meeting with the client's technical team to understand their current infrastructure",
-      "challenge": "The CTO asks: 'We have over 500 TB of unstructured patient data across legacy systems. How would Glean's architecture handle indexing and searching this data while maintaining HIPAA compliance?'",
+      "title": "Prompt Engineering Fundamentals",
+      "description": "Workshop with the customer's IT and knowledge management teams to introduce prompt engineering concepts",
+      "challenge": "The CTO asks: 'We've had mixed results with prompt engineering in the past. Some of our prompts produce inconsistent or vague responses. How can we ensure our Glean AI Agents provide precise, reliable answers that follow our company guidelines?'",
       "expectedElements": [
-        "Address HIPAA compliance capabilities",
-        "Explain Glean's approach to large-scale indexing",
-        "Discuss handling of unstructured data",
-        "Cover infrastructure requirements for their scale"
+        "Distinguish Glean's approach from general-purpose AI",
+        "Explain structured prompt components",
+        "Address consistency and reliability concerns",
+        "Introduce the concept of prompt guardrails"
       ],
       "technicalPoints": [
-        "Glean's multi-tiered access control",
-        "Federated search architecture",
-        "Incremental indexing for large datasets",
-        "Customizable data processing pipelines"
+        "Glean's knowledge source constraints",
+        "Context definition frameworks",
+        "Response templating methods",
+        "Confidence threshold configuration"
       ],
       "commonMistakes": [
-        "Providing generic answers about 'scalability'",
-        "Not addressing healthcare-specific compliance",
-        "Underestimating the migration challenges",
-        "Failing to discuss incremental approach options"
+        "Providing generic prompt advice not specific to Glean",
+        "Not addressing enterprise-specific requirements",
+        "Oversimplifying the prompt engineering process",
+        "Failing to mention reliability measurement"
       ],
-      "skillTags": ["technical-architecture", "compliance-knowledge", "data-assessment"],
+      "skillTags": ["prompt-design", "technical-communication", "knowledge-architecture"],
       "passThreshold": 75
     },
     {
-      "stageId": "security-discussion",
-      "title": "Security and Compliance Deep Dive",
-      "description": "Meeting with the security and compliance team to address their specific concerns",
-      "challenge": "The CISO states: 'Our patient data is subject to HIPAA, GDPR, and state-level regulations. We need to maintain audit trails for all data access. How exactly does Glean's security model work with these requirements?'",
+      "stageId": "governance-implementation",
+      "title": "Prompt Governance and Controls",
+      "description": "Session focused on implementing guardrails and governance for enterprise prompt design",
+      "challenge": "The Information Security Director states: 'Our company deals with sensitive customer information and proprietary data. How do we ensure AI Agents won't reveal confidential information or generate inappropriate responses?'",
       "expectedElements": [
-        "Explain Glean's audit logging capabilities",
-        "Detail the role-based access control system",
-        "Address multi-jurisdictional compliance",
-        "Discuss encryption standards used"
+        "Explain Glean's information access controls",
+        "Detail prompt-level security constraints",
+        "Address prohibited content handling",
+        "Discuss audit capabilities for agent responses"
       ],
       "technicalPoints": [
-        "End-to-end encryption methods",
-        "Customizable audit trail retention",
-        "Attribute-based access controls",
-        "Compliance certification details"
+        "Role-based prompt templates",
+        "Prohibited topic configuration",
+        "Confidence threshold implementation",
+        "Attribute-based knowledge access"
       ],
       "commonMistakes": [
-        "Giving vague assurances about security",
-        "Not knowing specific HIPAA technical requirements",
-        "Overpromising compliance features",
-        "Missing details on audit capabilities"
+        "Not addressing data leakage concerns directly",
+        "Providing vague assurances without technical specifics",
+        "Overlooking governance processes for prompt management",
+        "Missing the connection between access controls and prompts"
       ],
-      "skillTags": ["security-governance", "compliance-knowledge", "technical-communication"],
+      "skillTags": ["security-governance", "compliance-knowledge", "prompt-design"],
       "passThreshold": 80
     },
     {
-      "stageId": "user-adoption",
-      "title": "User Adoption Planning",
-      "description": "Meeting with department heads to discuss change management and adoption strategies",
-      "challenge": "The Head of Clinical Operations explains: 'Our doctors and nurses are very busy and resistant to new technology. How can we ensure they'll actually use Glean efficiently without disrupting patient care?'",
+      "stageId": "advanced-techniques",
+      "title": "Advanced Prompt Engineering Techniques",
+      "description": "Technical deep dive on optimizing prompt performance for complex enterprise scenarios",
+      "challenge": "The Knowledge Management Director explains: 'We have highly technical documents with specialized terminology across multiple departments. Regular AI systems struggle with this context. How can we create prompts that handle domain-specific knowledge effectively?'",
       "expectedElements": [
-        "Discuss Glean's user interface simplicity",
-        "Recommend a phased training approach",
-        "Suggest role-specific use cases",
-        "Address integration with existing workflows"
+        "Demonstrate domain-specific prompt techniques",
+        "Explain context window optimization",
+        "Address terminology and semantic challenges",
+        "Present testing frameworks for domain accuracy"
       ],
       "technicalPoints": [
-        "Single Sign-On implementation",
-        "Customizable user interfaces",
-        "Progressive feature rollout options",
-        "Workflow integration capabilities"
+        "Domain dictionary integration",
+        "Hierarchical prompt structures",
+        "Technical terminology handling",
+        "Knowledge graph-enhanced prompting"
       ],
       "commonMistakes": [
-        "Focusing only on features, not on adoption",
-        "Not acknowledging healthcare-specific workflows",
-        "Underestimating training needs",
-        "Missing opportunities for early quick wins"
+        "Not addressing the complexity of technical domains",
+        "Providing general solutions for specialized problems",
+        "Underestimating the need for domain validation",
+        "Missing opportunities for knowledge structure leveraging"
       ],
-      "skillTags": ["change-management", "user-experience", "stakeholder-management"],
-      "passThreshold": 70
+      "skillTags": ["advanced-prompting", "domain-expertise", "semantic-understanding"],
+      "passThreshold": 85
+    },
+    {
+      "stageId": "measurement-optimization",
+      "title": "Prompt Measurement and Optimization",
+      "description": "Workshop on establishing metrics and improvement processes for prompt quality",
+      "challenge": "The VP of Engineering asks: 'How do we actually know if our prompts are working well? What metrics should we track, and what process should we use to continuously improve them?'",
+      "expectedElements": [
+        "Define key quality metrics for prompts",
+        "Present A/B testing methodology",
+        "Explain the prompt refinement lifecycle",
+        "Discuss balancing precision vs. recall"
+      ],
+      "technicalPoints": [
+        "Statistical evaluation frameworks",
+        "User feedback integration systems",
+        "Automated quality monitoring",
+        "Performance dashboard configuration"
+      ],
+      "commonMistakes": [
+        "Focusing only on subjective assessments",
+        "Not establishing clear improvement processes",
+        "Overlooking the need for targeted test cases",
+        "Missing the connection between user experience and prompt metrics"
+      ],
+      "skillTags": ["performance-optimization", "data-analysis", "quality-assurance"],
+      "passThreshold": 75
     }
   ],
   "adaptationRules": {

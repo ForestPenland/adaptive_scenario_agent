@@ -5,7 +5,7 @@ set -e
 # Useful when you've built the frontend but need to deploy it separately
 
 # Default values
-AWS_PROFILE=""
+AWS_PROFILE="prod-web"
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
