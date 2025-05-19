@@ -137,6 +137,31 @@ export class GleanTechnicalEnablementStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30),
       memorySize: 512,
     });
+    
+    // Bedrock Chat Lambda for chatbot interface
+    const bedrockChatLambda = new lambda.Function(this, 'BedrockChatLambda', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      code: lambda.Code.fromAsset('lambda/bedrock-chat', {
+        bundling: {
+          image: lambda.Runtime.NODEJS_18_X.bundlingImage,
+          command: [
+            'bash', '-c', [
+              'npm install',
+              'cp -r /asset-input/* /asset-output/',
+              'cp -r node_modules /asset-output/'
+            ].join(' && ')
+          ]
+        }
+      }),
+      handler: 'index.handler',
+      environment: {
+        BEDROCK_AGENT_ID: process.env.BEDROCK_AGENT_ID || 'your-agent-id', // Will be set during deployment
+        AGENT_ALIAS: process.env.BEDROCK_AGENT_ALIAS || 'your-agent-alias', // Will be set during deployment
+      },
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 512,
+      role: bedrockRole,
+    });
 
     // 5. Permissions
     scenarioTable.grantReadWriteData(scenarioManagerLambda);
@@ -181,6 +206,13 @@ export class GleanTechnicalEnablementStack extends cdk.Stack {
 
     const learnerPath = api.root.addResource('learner-path');
     learnerPath.addMethod('GET', new apigateway.LambdaIntegration(pathAdapterLambda), {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    });
+    
+    // Add new /message endpoint for chatbot
+    const message = api.root.addResource('message');
+    message.addMethod('POST', new apigateway.LambdaIntegration(bedrockChatLambda), {
       authorizer,
       authorizationType: apigateway.AuthorizationType.COGNITO,
     });

@@ -1,5 +1,7 @@
 #random
 nul
+cline_mcp_settings.json
+install_github_mcp.bat
 # CDK output
 .cdk.staging
 cdk.out/

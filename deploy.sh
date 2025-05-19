@@ -7,6 +7,7 @@ set -e
 AWS_PROFILE=""
 BEDROCK_AGENT_ID=""
 BEDROCK_AGENT_ALIAS=""
+AWS_REGION="us-east-1"
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -27,6 +28,11 @@ while [[ $# -gt 0 ]]; do
         shift # past argument
         shift # past value
         ;;
+        -r|--region)
+        AWS_REGION="$2"
+        shift # past argument
+        shift # past value
+        ;;
         *)    # unknown option
         shift # past argument
         ;;
@@ -44,6 +50,28 @@ if [ ! -z "$AWS_PROFILE" ]; then
     # For AWS SSO profiles that are in ~/.aws/config instead of ~/.aws/credentials
     export AWS_SDK_LOAD_CONFIG=1
 fi
+
+# Set AWS region
+echo "Using AWS region: $AWS_REGION"
+export AWS_REGION
+
+# Get AWS account ID
+if [ ! -z "$AWS_PROFILE" ]; then
+    AWS_ACCOUNT_ID=$(aws sts get-caller-identity --profile $AWS_PROFILE --query "Account" --output text)
+else
+    AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
+fi
+
+if [ -z "$AWS_ACCOUNT_ID" ]; then
+    echo "Error: Could not determine AWS account ID. Please check your AWS credentials."
+    exit 1
+fi
+
+echo "Using AWS account ID: $AWS_ACCOUNT_ID"
+
+# Set CDK environment variables
+export CDK_DEFAULT_ACCOUNT=$AWS_ACCOUNT_ID
+export CDK_DEFAULT_REGION=$AWS_REGION
 
 # Check if Bedrock Agent ID and Alias are provided
 if [ -z "$BEDROCK_AGENT_ID" ]; then
