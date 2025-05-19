@@ -49,6 +49,16 @@
     background-color: #f8f9fa;
     padding: 10px;
     overflow-y: auto;
+    height: calc(100% - 120px); /* Adjust height to prevent overflow */
+}
+
+/* Message container improvement */
+.react-chatbot-kit-chat-bot-message-container {
+    display: flex;
+    margin: 5px 0;
+    align-items: flex-start;
+    max-width: 85%;
+    word-break: break-word;
 }
 
 .react-chatbot-kit-chat-bot-message {
@@ -57,6 +67,14 @@
     padding: 10px;
     margin: 5px 0;
     max-width: 80%;
+    min-height: 20px;
+}
+
+/* Message content specific styling */
+.react-chatbot-kit-chat-bot-message span {
+    display: inline-block;
+    width: 100%;
+    overflow-wrap: break-word;
 }
 
 .react-chatbot-kit-user-chat-message {
@@ -66,6 +84,8 @@
     padding: 10px;
     margin: 5px 0 5px auto;
     max-width: 80%;
+    min-height: 20px;
+    word-break: break-word;
 }
 
 .react-chatbot-kit-user-chat-message-arrow {
@@ -74,4 +94,25 @@
 
 .react-chatbot-kit-chat-bot-message-arrow {
     border-left: 8px solid #e9ecef;
+}
+
+/* Avatar container adjustments */
+.react-chatbot-kit-chat-bot-avatar-container {
+    display: flex;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    background-color: #0d6efd;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* Fix for chat message alignment and avatar styling */
+.react-chatbot-kit-chat-bot-avatar-icon {
+    margin-right: 0;
+    width: 20px;
+    height: 20px;
+    padding: 5px;
+    box-sizing: border-box;
 }

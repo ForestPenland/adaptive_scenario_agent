@@ -1,0 +1,84 @@
+/* Custom styling for bot message components */
+.custom-bot-message {
+    width: 100%;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #212529;
+    margin: 0;
+    padding: 0;
+}
+
+/* Handle JSON responses with better formatting */
+.custom-bot-message pre {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 8px;
+    margin-top: 8px;
+    overflow-x: auto;
+    font-family: monospace;
+    font-size: 12px;
+    max-width: 100%;
+}
+
+/* Ensure text is visible and properly formatted */
+.custom-bot-message p {
+    margin: 0 0 10px 0;
+}
+
+.custom-bot-message ul, .custom-bot-message ol {
+    margin-left: 0;
+    padding-left: 20px;
+}
+
+/* Fix for message container to ensure content is visible */
+.react-chatbot-kit-chat-bot-message-container {
+    display: flex;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+/* Improve user message container spacing */
+.react-chatbot-kit-user-chat-message-container {
+    margin-bottom: 12px;
+}
+
+/* Additional styling for bot avatar if needed */
+.react-chatbot-kit-chat-bot-avatar-container {
+    margin-right: 8px;
+}
+
+/* Better focus handling */
+.react-chatbot-kit-chat-input:focus {
+    border-color: #0d6efd;
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Improved auto-sizing for message bubbles */
+.react-chatbot-kit-chat-bot-message {
+    height: auto !important;
+    min-height: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Fix avatar display issues */
+.avatar-container svg, .avatar-container img {
+    width: 20px;
+    height: 20px;
+    fill: white;
+}
+
+/* Ensure link text is readable on blue background */
+.react-chatbot-kit-user-chat-message a {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* Fix container width issues */
+.react-chatbot-kit-chat-inner-container {
+    width: 100%;
+    height: 100%;
+}
