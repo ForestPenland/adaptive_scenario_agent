@@ -18,9 +18,7 @@ const ActionProvider = ({ createChatBotMessage, setState, children }) => {
       
       // Call the API Gateway endpoint with properly formatted request body
       const response = await API.post('api', `/message?session=${sessionId}`, {
-        body: {
-          inputText: userMessage
-        },
+        body: userMessage,
       });
       
       console.log('Bot response type:', typeof response.bot);
