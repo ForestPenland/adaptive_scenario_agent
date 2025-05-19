@@ -102,6 +102,20 @@ export class GleanTechnicalEnablementStack extends cdk.Stack {
       timeout: cdk.Duration.seconds(30),
       memorySize: 512,
     });
+    
+    // Bedrock Chat Lambda for chatbot interface
+    const bedrockChatLambda = new lambda.Function(this, 'BedrockChatLambda', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      code: lambda.Code.fromAsset('lambda/bedrock-chat'),
+      handler: 'index.handler',
+      environment: {
+        BEDROCK_AGENT_ID: process.env.BEDROCK_AGENT_ID || 'your-agent-id', // Will be set during deployment
+        AGENT_ALIAS: process.env.BEDROCK_AGENT_ALIAS || 'your-agent-alias', // Will be set during deployment
+      },
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 512,
+      role: bedrockRole,
+    });
 
     // 5. Permissions
     scenarioTable.grantReadWriteData(scenarioManagerLambda);
@@ -149,10 +163,18 @@ export class GleanTechnicalEnablementStack extends cdk.Stack {
       authorizer,
       authorizationType: apigateway.AuthorizationType.COGNITO,
     });
+    
+    // Add new /message endpoint for chatbot
+    const message = api.root.addResource('message');
+    message.addMethod('POST', new apigateway.LambdaIntegration(bedrockChatLambda), {
+      authorizer,
+      authorizationType: apigateway.AuthorizationType.COGNITO,
+    });
 
     // 7. Outputs
     new cdk.CfnOutput(this, 'UserPoolId', { value: userPool.userPoolId });
     new cdk.CfnOutput(this, 'UserPoolClientId', { value: userPoolClient.userPoolClientId });
     new cdk.CfnOutput(this, 'ApiEndpoint', { value: api.url });
+    new cdk.CfnOutput(this, 'ScenarioTableName', { value: scenarioTable.tableName });
   }
 }

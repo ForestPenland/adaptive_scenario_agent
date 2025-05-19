@@ -5,6 +5,8 @@ set -e
 
 # Default values
 AWS_PROFILE=""
+BEDROCK_AGENT_ID=""
+BEDROCK_AGENT_ALIAS=""
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -12,6 +14,16 @@ while [[ $# -gt 0 ]]; do
     case $key in
         -p|--profile)
         AWS_PROFILE="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        -a|--agent-id)
+        BEDROCK_AGENT_ID="$2"
+        shift # past argument
+        shift # past value
+        ;;
+        -l|--agent-alias)
+        BEDROCK_AGENT_ALIAS="$2"
         shift # past argument
         shift # past value
         ;;
@@ -32,6 +44,24 @@ if [ ! -z "$AWS_PROFILE" ]; then
     # For AWS SSO profiles that are in ~/.aws/config instead of ~/.aws/credentials
     export AWS_SDK_LOAD_CONFIG=1
 fi
+
+# Check if Bedrock Agent ID and Alias are provided
+if [ -z "$BEDROCK_AGENT_ID" ]; then
+    echo "Bedrock Agent ID not provided. Using default value."
+    BEDROCK_AGENT_ID="your-agent-id"
+fi
+
+if [ -z "$BEDROCK_AGENT_ALIAS" ]; then
+    echo "Bedrock Agent Alias not provided. Using default value."
+    BEDROCK_AGENT_ALIAS="your-agent-alias"
+fi
+
+echo "Using Bedrock Agent ID: $BEDROCK_AGENT_ID"
+echo "Using Bedrock Agent Alias: $BEDROCK_AGENT_ALIAS"
+
+# Export environment variables for CDK
+export BEDROCK_AGENT_ID=$BEDROCK_AGENT_ID
+export BEDROCK_AGENT_ALIAS=$BEDROCK_AGENT_ALIAS
 
 # Check if jq is installed
 if ! command -v jq &> /dev/null; then
@@ -93,6 +123,8 @@ echo "UserPoolId: $USER_POOL_ID"
 echo "UserPoolClientId: $USER_POOL_CLIENT_ID"
 echo "ApiEndpoint: $API_ENDPOINT"
 echo "WebsiteURL: $WEBSITE_URL"
+echo "BedrockAgentId: $BEDROCK_AGENT_ID"
+echo "BedrockAgentAlias: $BEDROCK_AGENT_ALIAS"
 echo "========================================"
 
 # Create .env file for the frontend
@@ -101,6 +133,8 @@ cat > frontend/.env << EOF
 REACT_APP_USER_POOL_ID=$USER_POOL_ID
 REACT_APP_USER_POOL_CLIENT_ID=$USER_POOL_CLIENT_ID
 REACT_APP_API_ENDPOINT=$API_ENDPOINT
+REACT_APP_BEDROCK_AGENT_ID=$BEDROCK_AGENT_ID
+REACT_APP_BEDROCK_AGENT_ALIAS=$BEDROCK_AGENT_ALIAS
 EOF
 
 # Build the frontend

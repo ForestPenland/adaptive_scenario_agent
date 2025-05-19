@@ -197,3 +197,49 @@ cdk destroy
   - WAF configuration
   - More restrictive CORS settings
   - Enhanced encryption options for DynamoDB
+## Chatbot Integration
+
+This project includes a floating chatbot interface that connects to an Amazon Bedrock agent. The chatbot provides an interactive way for users to get assistance and information.
+
+### Features
+
+- Floating chat button in the bottom-right corner of the application
+- Integration with Amazon Bedrock agent for intelligent responses
+- Persistent chat sessions using UUID-based session management
+- Responsive design that works on all device sizes
+
+### Deployment
+
+To deploy the application with the chatbot functionality, use the following command:
+
+```bash
+./deploy.sh -p <aws-profile> -a <bedrock-agent-id> -l <bedrock-agent-alias>
+```
+
+Parameters:
+- `-p` or `--profile`: AWS profile to use for deployment
+- `-a` or `--agent-id`: Bedrock Agent ID to connect to
+- `-l` or `--agent-alias`: Bedrock Agent Alias to use
+
+Example:
+```bash
+./deploy.sh -p prod-web -a abc123 -l TSTALIASID
+```
+
+### Technical Implementation
+
+The chatbot consists of:
+
+1. **Frontend Components**:
+   - React-based chatbot using `react-chatbot-kit`
+   - Floating button interface
+   - Message handling and display
+
+2. **Backend Integration**:
+   - Lambda function for processing messages
+   - API Gateway endpoint at `/message`
+   - Bedrock agent integration
+
+3. **Authentication**:
+   - Uses the same Cognito authentication as the main application
+   - Secure API calls with JWT tokens
